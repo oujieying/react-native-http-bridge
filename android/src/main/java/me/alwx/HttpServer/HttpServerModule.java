@@ -6,9 +6,12 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactMethod;
 
+import java.io.File;
 import java.io.IOException;
 
 import android.util.Log;
+
+import fi.iki.elonen.SimpleWebServer;
 
 public class HttpServerModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
     ReactApplicationContext reactContext;
@@ -17,6 +20,8 @@ public class HttpServerModule extends ReactContextBaseJavaModule implements Life
 
     private static int port;
     private static Server server = null;
+    private static SimpleWebServer webServer = null;
+    private static int webServerPort;
 
     public HttpServerModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -37,6 +42,8 @@ public class HttpServerModule extends ReactContextBaseJavaModule implements Life
 
         startServer();
     }
+
+
 
     @ReactMethod
     public void stop() {
@@ -88,5 +95,38 @@ public class HttpServerModule extends ReactContextBaseJavaModule implements Life
             server = null;
             port = 0;
         }
+    }
+
+
+    @ReactMethod
+    public void startWebServer(String host,int port, String filePath) {
+        Log.d(MODULE_NAME, "Initializing server...");
+        this.webServerPort = port;
+        if (this.webServerPort == 0) {
+            return;
+        }
+        File  file = new File(filePath);
+        if(!file.exists()){
+            Log.d("File is not exist",filePath);
+            file =  reactContext.getFilesDir();
+        }
+
+       // String host = "10.0.16.1";
+        if (webServer == null) {
+        //    File file = reactContext.getFilesDir();
+            webServer = new SimpleWebServer(host,webServerPort,file,false);
+            try {
+                webServer.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+    @ReactMethod
+    public void stopWebServefr() {
+        Log.d(MODULE_NAME, "Stopping server...");
     }
 }

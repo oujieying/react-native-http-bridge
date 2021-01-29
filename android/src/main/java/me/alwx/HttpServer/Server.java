@@ -14,8 +14,9 @@ import java.util.Set;
 import java.util.HashMap;
 import java.util.Random;
 
-import android.support.annotation.Nullable;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 public class Server extends NanoHTTPD {
     private static final String TAG = "HttpServer";
